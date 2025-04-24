@@ -33,5 +33,103 @@
     "title": "Hands-on EX 1",
     "section": "",
     "text": "exam_data &lt;- read.csv(\"data/Exam_data.csv\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#remove-y-axis",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#remove-y-axis",
+    "title": "Hands-on EX 1",
+    "section": "remove y axis",
+    "text": "remove y axis\n\nggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot(binwidth=2.5,         \n               dotsize = 0.5) +      \n  scale_y_continuous(NULL,           \n                     breaks = NULL)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-object-by-changing-geom",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-object-by-changing-geom",
+    "title": "Hands-on EX 1",
+    "section": "changing object by changing geom()",
+    "text": "changing object by changing geom()\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20,            \n                 color=\"black\",      \n                 fill=\"light blue\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-object-by-changing-aes",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-object-by-changing-aes",
+    "title": "Hands-on EX 1",
+    "section": "changing object by changing aes()",
+    "text": "changing object by changing aes()\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           fill = GENDER)) +\n  geom_histogram(bins=20, \n                 color=\"grey30\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#add-another-line",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#add-another-line",
+    "title": "Hands-on EX 1",
+    "section": "add another line",
+    "text": "add another line\n\nggplot(data=exam_data, \n       aes(x = MATHS, \n           colour = GENDER)) +\n  geom_density()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-notched-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-notched-plot",
+    "title": "Hands-on EX 1",
+    "section": "plotting a notched plot",
+    "text": "plotting a notched plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_boxplot(notch=TRUE)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-violin-plot",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-violin-plot",
+    "title": "Hands-on EX 1",
+    "section": "plotting a violin plot",
+    "text": "plotting a violin plot\n\nggplot(data=exam_data, \n       aes(y = MATHS, \n           x= GENDER)) +\n  geom_violin()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#add-mean-value-for-box-plot-using-stat_summary",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#add-mean-value-for-box-plot-using-stat_summary",
+    "title": "Hands-on EX 1",
+    "section": "add mean value for box plot using stat_summary()",
+    "text": "add mean value for box plot using stat_summary()\n\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  stat_summary(geom = \"point\",       \n               fun = \"mean\",         \n               colour =\"red\",        \n               size=4)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#add-mean-value-for-box-plot-using-geom",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#add-mean-value-for-box-plot-using-geom",
+    "title": "Hands-on EX 1",
+    "section": "add mean value for box plot using geom()",
+    "text": "add mean value for box plot using geom()\n\nggplot(data=exam_data, \n       aes(y = MATHS, x= GENDER)) +\n  geom_boxplot() +\n  geom_point(stat=\"summary\",        \n             fun=\"mean\",           \n             colour=\"red\",          \n             size=4)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-the-smothing-method",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-the-smothing-method",
+    "title": "Hands-on EX 1",
+    "section": "changing the smothing method",
+    "text": "changing the smothing method\n\nggplot(data=exam_data, \n       aes(x= MATHS, \n           y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              linewidth=0.5)\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-trellis-plot-using-facet_grid",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#plotting-a-trellis-plot-using-facet_grid",
+    "title": "Hands-on EX 1",
+    "section": "plotting a trellis plot using facet_grid()",
+    "text": "plotting a trellis plot using facet_grid()\n\nggplot(data=exam_data, \n       aes(x= MATHS)) +\n  geom_histogram(bins=20) +\n    facet_grid(~ CLASS)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-range-from-0-100-to-know-the-exact-relationship",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#changing-range-from-0-100-to-know-the-exact-relationship",
+    "title": "Hands-on EX 1",
+    "section": "changing range from 0-100 to know the exact relationship",
+    "text": "changing range from 0-100 to know the exact relationship\n\nggplot(data=exam_data, \n       aes(x= MATHS, y=ENGLISH)) +\n  geom_point() +\n  geom_smooth(method=lm, \n              size=0.5) +  \n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#theme_gray",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#theme_gray",
+    "title": "Hands-on EX 1",
+    "section": "theme_gray",
+    "text": "theme_gray\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_gray()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#theme_classic",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#theme_classic",
+    "title": "Hands-on EX 1",
+    "section": "theme_classic",
+    "text": "theme_classic\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_classic()"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#theme_minimal",
+    "href": "Hands-on_Ex/Hands-on_Ex01/Hands-on_Ex01.html#theme_minimal",
+    "title": "Hands-on EX 1",
+    "section": "theme_minimal()",
+    "text": "theme_minimal()\n\nggplot(data=exam_data, \n       aes(x=RACE)) +\n  geom_bar() +\n  coord_flip() +\n  theme_minimal()"
   }
 ]
