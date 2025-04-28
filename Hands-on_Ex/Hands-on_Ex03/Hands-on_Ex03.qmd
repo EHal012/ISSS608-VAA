@@ -1,0 +1,26 @@
+---
+title: "Hands-on_Ex03"
+---
+
+# **3  Programming Interactive Data Visualisation with R**
+
+3.1 Getting Started
+
+Load the R packages: ggiraph, plotly, DT, tidyverse, patchwork
+
+Use this code to install and launch
+
+```{r}
+pacman::p_load(ggiraph, plotly, 
+               patchwork, DT, tidyverse) 
+```
+
+3.2 Importing Data
+
+
+Use below code to import data
+
+```{r}
+exam_data <- read_csv("data/Exam_data.csv")
+```
+
