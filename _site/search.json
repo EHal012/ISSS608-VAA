@@ -229,5 +229,117 @@
     "title": "Hands-on_Ex02",
     "section": "Creating a composite figure by using patchwork and ggtheme",
     "text": "Creating a composite figure by using patchwork and ggtheme\n\npatchwork &lt;- (p1 / p2) | p3\npatchwork & theme_economist()\n\n`geom_smooth()` using formula = 'y ~ x'"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html",
+    "title": "Hands-on_Ex03",
+    "section": "",
+    "text": "3.1 Getting Started\nLoad the R packages: ggiraph, plotly, DT, tidyverse, patchwork\nUse this code to install and launch\n\npacman::p_load(ggiraph, plotly, \n               patchwork, DT, tidyverse)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#tooltip-effect-with-tooltip-aesthetic",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#tooltip-effect-with-tooltip-aesthetic",
+    "title": "Hands-on_Ex03",
+    "section": "3.3.1Tooltip effect with tooltip aesthetic",
+    "text": "3.3.1Tooltip effect with tooltip aesthetic\na typical code chunk to plot an interactive statistical graph by using ggiraph package\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = ID),\n    stackgroups = TRUE, \n    binwidth = 1, \n    method = \"histodot\") +\n  scale_y_continuous(NULL, \n                     breaks = NULL)\ngirafe(\n  ggobj = p,\n  width_svg = 6,\n  height_svg = 6*0.618\n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#displaying-multiple-information-on-tooltip",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#displaying-multiple-information-on-tooltip",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.1 Displaying multiple information on tooltip",
+    "text": "3.4.1 Displaying multiple information on tooltip\nThe first three lines of codes in the code chunk create a new field called tooltip. At the same time, it populates text in ID and CLASS fields into the newly created field.\nBy hovering the mouse pointer on an data point of interest, the student’s ID and Class will be displayed\n\nexam_data$tooltip &lt;- c(paste0(     \n  \"Name = \", exam_data$ID,         \n  \"\\n Class = \", exam_data$CLASS)) \n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(\n    aes(tooltip = exam_data$tooltip), \n    stackgroups = TRUE,\n    binwidth = 1,\n    method = \"histodot\") +\n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(\n  ggobj = p,\n  width_svg = 8,\n  height_svg = 8*0.618\n)\n\n\n\n\n\n\n3.4.2 Customising Tooltip style\nChange the Tooltip style with white background and black font color\n\ntooltip_css &lt;- \"background-color:white; #&lt;&lt;\nfont-style:bold; color:black;\" #&lt;&lt;\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = ID),                   \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(    #&lt;&lt;\n    opts_tooltip(    #&lt;&lt;\n      css = tooltip_css)) #&lt;&lt;\n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#displaying-statistics-on-tooltip",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#displaying-statistics-on-tooltip",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.3 Displaying statistics on tooltip",
+    "text": "3.4.3 Displaying statistics on tooltip\nCode chunk below shows advanced way to customize tooltip.\n\ntooltip &lt;- function(y, ymax, accuracy = .01) {\n  mean &lt;- scales::number(y, accuracy = accuracy)\n  sem &lt;- scales::number(ymax - y, accuracy = accuracy)\n  paste(\"Mean maths scores:\", mean, \"+/-\", sem)\n}\n\ngg_point &lt;- ggplot(data=exam_data, \n                   aes(x = RACE),\n) +\n  stat_summary(aes(y = MATHS, \n                   tooltip = after_stat(  \n                     tooltip(y, ymax))),  \n    fun.data = \"mean_se\", \n    geom = GeomInteractiveCol,  \n    fill = \"light blue\"\n  ) +\n  stat_summary(aes(y = MATHS),\n    fun.data = mean_se,\n    geom = \"errorbar\", width = 0.2, size = 0.2\n  )\n\nWarning: Using `size` aesthetic for lines was deprecated in ggplot2 3.4.0.\nℹ Please use `linewidth` instead.\n\ngirafe(ggobj = gg_point,\n       width_svg = 8,\n       height_svg = 8*0.618)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#hover-effect-with-data_id-aesthetic",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#hover-effect-with-data_id-aesthetic",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.4 Hover effect with data_id aesthetic",
+    "text": "3.4.4 Hover effect with data_id aesthetic\nInteractivity: Elements associated with a data_id (i.e CLASS) will be highlighted upon mouse over.\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(           \n    aes(data_id = CLASS),             \n    stackgroups = TRUE,               \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618                      \n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#styling-hover-effect",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#styling-hover-effect",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.5 Styling hover effect",
+    "text": "3.4.5 Styling hover effect\nIn the code chunk below, css codes are used to change the highlighting effect.\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = CLASS),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(                        \n    opts_hover(css = \"fill: #202020;\"),  \n    opts_hover_inv(css = \"opacity:0.2;\") \n  )                                        \n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#combining-tooltip-and-hover-effect",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#combining-tooltip-and-hover-effect",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.6 Combining tooltip and hover effect",
+    "text": "3.4.6 Combining tooltip and hover effect\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = CLASS, \n        data_id = CLASS),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618,\n  options = list(                        \n    opts_hover(css = \"fill: #202020;\"),  \n    opts_hover_inv(css = \"opacity:0.2;\") \n  )                                        \n)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#click-effect-with-onclick",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#click-effect-with-onclick",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.7 Click effect with onclick",
+    "text": "3.4.7 Click effect with onclick\nonclick argument of ggiraph provides hotlink interactivity on the web\nInteractivity: Web document link with a data object will be displayed on the web browser upon mouse click.\n\nexam_data$onclick &lt;- sprintf(\"window.open(\\\"%s%s\\\")\",\n\"https://www.moe.gov.sg/schoolfinder?journey=Primary%20school\",\nas.character(exam_data$ID))\n\np &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(onclick = onclick),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +               \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\ngirafe(                                  \n  ggobj = p,                             \n  width_svg = 6,                         \n  height_svg = 6*0.618)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#coordinated-multiple-views-with-ggiraph",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#coordinated-multiple-views-with-ggiraph",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.8 Coordinated Multiple Views with ggiraph",
+    "text": "3.4.8 Coordinated Multiple Views with ggiraph\nPurpose: When a data point of one of the dotplot is selected, the corresponding data point ID on the second data visualisation will be highlighted too\nIn order to build a coordinated multiple views as shown in the example above, the following programming strategy will be used:\n\nAppropriate interactive functions of ggiraph will be used to create the multiple views\npatchwork function of patchwork package will be used inside girafe function to create the interactive coordinated multiple views.\n\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +  \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\np2 &lt;- ggplot(data=exam_data, \n       aes(x = ENGLISH)) +\n  geom_dotplot_interactive(              \n    aes(data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") + \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(code = print(p1 + p2), \n       width_svg = 6,\n       height_svg = 3,\n       options = list(\n         opts_hover(css = \"fill: #202020;\"),\n         opts_hover_inv(css = \"opacity:0.2;\")\n         )\n       )"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#add-tooltip-for-a-better-view",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#add-tooltip-for-a-better-view",
+    "title": "Hands-on_Ex03",
+    "section": "3.4.9 Add tooltip for a better view",
+    "text": "3.4.9 Add tooltip for a better view\n\np1 &lt;- ggplot(data=exam_data, \n       aes(x = MATHS)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = ID,\n        data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") +  \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\np2 &lt;- ggplot(data=exam_data, \n       aes(x = ENGLISH)) +\n  geom_dotplot_interactive(              \n    aes(tooltip = ID,\n        data_id = ID),              \n    stackgroups = TRUE,                  \n    binwidth = 1,                        \n    method = \"histodot\") + \n  coord_cartesian(xlim=c(0,100)) + \n  scale_y_continuous(NULL,               \n                     breaks = NULL)\n\ngirafe(code = print(p1 + p2), \n       width_svg = 6,\n       height_svg = 3,\n       options = list(\n         opts_hover(css = \"fill: #202020;\"),\n         opts_hover_inv(css = \"opacity:0.2;\"),\n         opts_tooltip(\n           css = \"background-color:white; color:black; border:1px solid #333; padding:4px; border-radius:4px;\"\n         )\n         )\n       )"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#creating-an-interactive-scatter-plot-plot_ly-method",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#creating-an-interactive-scatter-plot-plot_ly-method",
+    "title": "Hands-on_Ex03",
+    "section": "3.5.1 Creating an interactive scatter plot: plot_ly() method",
+    "text": "3.5.1 Creating an interactive scatter plot: plot_ly() method\nThe tabset below shows an example a basic interactive plot created by using plot_ly().\n\nplot_ly(data = exam_data, \n             x = ~MATHS, \n             y = ~ENGLISH)\n\nNo trace type specified:\n  Based on info supplied, a 'scatter' trace seems appropriate.\n  Read more about this trace type -&gt; https://plotly.com/r/reference/#scatter\n\n\nNo scatter mode specifed:\n  Setting the mode to markers\n  Read more about this attribute -&gt; https://plotly.com/r/reference/#scatter-mode"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#working-with-visual-variable-plot_ly-method",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#working-with-visual-variable-plot_ly-method",
+    "title": "Hands-on_Ex03",
+    "section": "3.5.2 Working with visual variable: plot_ly() method",
+    "text": "3.5.2 Working with visual variable: plot_ly() method\nIn the code chunk below, color argument is mapped to a qualitative visual variable (i.e. RACE)\n\nplot_ly(data = exam_data, \n        x = ~ENGLISH, \n        y = ~MATHS, \n        color = ~RACE)\n\nNo trace type specified:\n  Based on info supplied, a 'scatter' trace seems appropriate.\n  Read more about this trace type -&gt; https://plotly.com/r/reference/#scatter\n\n\nNo scatter mode specifed:\n  Setting the mode to markers\n  Read more about this attribute -&gt; https://plotly.com/r/reference/#scatter-mode"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#creating-an-interactive-scatter-plot-ggplotly-method",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#creating-an-interactive-scatter-plot-ggplotly-method",
+    "title": "Hands-on_Ex03",
+    "section": "3.5.3 Creating an interactive scatter plot: ggplotly() method",
+    "text": "3.5.3 Creating an interactive scatter plot: ggplotly() method\n\np &lt;- ggplot(data=exam_data, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nggplotly(p)"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#coordinated-multiple-views-with-plotly",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#coordinated-multiple-views-with-plotly",
+    "title": "Hands-on_Ex03",
+    "section": "3.5.4 Coordinated Multiple Views with plotly",
+    "text": "3.5.4 Coordinated Multiple Views with plotly\nThe creation of a coordinated linked plot by using plotly involves three steps:\n\nhighlight_key() of plotly package is used as shared data.\ntwo scatterplots will be created by using ggplot2 functions.\nlastly, subplot() of plotly package is used to place them next to each other side-by-side.\n\n\nd &lt;- highlight_key(exam_data)\np1 &lt;- ggplot(data=d, \n            aes(x = MATHS,\n                y = ENGLISH)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\np2 &lt;- ggplot(data=d, \n            aes(x = MATHS,\n                y = SCIENCE)) +\n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\nsubplot(ggplotly(p1),\n        ggplotly(p2))"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#interactive-data-table-dt-package",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#interactive-data-table-dt-package",
+    "title": "Hands-on_Ex03",
+    "section": "3.6.1 Interactive Data Table: DT package",
+    "text": "3.6.1 Interactive Data Table: DT package\n\nA wrapper of the JavaScript Library DataTables\nData objects in R can be rendered as HTML tables using the JavaScript library ‘DataTables’ (typically via R Markdown or Shiny).\n\n\nDT::datatable(exam_data, class= \"compact\")"
+  },
+  {
+    "objectID": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#linked-brushing-crosstalk-method",
+    "href": "Hands-on_Ex/Hands-on_Ex03/Hands-on_Ex03.html#linked-brushing-crosstalk-method",
+    "title": "Hands-on_Ex03",
+    "section": "3.6.2 Linked brushing: crosstalk method",
+    "text": "3.6.2 Linked brushing: crosstalk method\n\nd &lt;- highlight_key(exam_data) \np &lt;- ggplot(d, \n            aes(ENGLISH, \n                MATHS)) + \n  geom_point(size=1) +\n  coord_cartesian(xlim=c(0,100),\n                  ylim=c(0,100))\n\ngg &lt;- highlight(ggplotly(p),        \n                \"plotly_selected\")  \n\ncrosstalk::bscols(gg,               \n                  DT::datatable(d), \n                  widths = 5)        \n\nSetting the `off` event (i.e., 'plotly_deselect') to match the `on` event (i.e., 'plotly_selected'). You can change this default via the `highlight()` function."
   }
 ]
