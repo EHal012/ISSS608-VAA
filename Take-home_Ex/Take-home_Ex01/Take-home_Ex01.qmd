@@ -1,0 +1,84 @@
+---
+title: "Take-home exercise01"
+author: "YUAN yihao"
+---
+
+Getting started
+
+install and launching R packages
+
+```{r}
+pacman::p_load(ggiraph, plotly, 
+               patchwork, DT, tidyverse) 
+```
+
+Importing the data
+
+```{r}
+res_data <- read_csv("respopagesex2024/respopagesex2024.csv")
+```
+
+1.  Stacked Histogram of Population by Age and Sex
+
+```{r}
+res_data$Age <- as.numeric(as.character(res_data$Age))
+
+str(res_data)
+
+```
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(dplyr)
+
+sex_colors <- c("Males" = "steelblue", "Females" = "tomato")
+
+plot_data <- res_data %>%
+  mutate(tooltip = paste("Age:", Age, "<br>Sex:", Sex, "<br>Pop:", Pop))
+
+p <- ggplot(plot_data, aes(x = Age, y = Pop, fill = Sex, text = tooltip)) +
+  geom_col(position = "stack") +
+  scale_fill_manual(values = sex_colors) +
+  labs(
+    x = "Age", y = "Population",
+    title = "Stacked Histogram of Population by Age and Sex"
+  ) +
+  theme_minimal()
+
+ggplotly(p, tooltip = "text")
+```
+
+2.  Stacked Bar chart of Population by Planing Area and Sex
+
+```{r}
+library(ggplot2)
+library(plotly)
+library(dplyr)
+
+plot_data <- res_data %>%
+  mutate(
+    Sex = factor(Sex, levels = c("Males", "Females")),
+    tooltip = paste0("PA: ", PA, "<br>Sex: ", Sex, "<br>Population: ", format(Pop, big.mark = ","))
+  )
+
+p <- ggplot(plot_data, aes(x = PA, y = Pop, fill = Sex, text = tooltip)) +
+  geom_bar(stat = "identity", position = "stack") +
+  scale_fill_manual(values = c("Males" = "#1f77b4", "Females" = "#ff7f0e")) +
+  labs(x = NULL, y = NULL, fill = "Gender") +
+  theme_minimal() +
+  theme(
+    axis.text.x = element_blank(),
+    axis.text.y = element_blank(),
+    panel.grid.major.x = element_blank(),
+    panel.grid.major.y = element_blank()
+  )
+
+ggplotly(p, tooltip = "text") %>%
+  layout(
+    hoverlabel = list(bgcolor = "white", font = list(size = 12)),
+    legend = list(orientation = "h", x = 0.5, y = -0.2),
+    yaxis = list(showticklabels = FALSE, title = "")
+  ) %>%
+  config(displayModeBar = TRUE)
+```
