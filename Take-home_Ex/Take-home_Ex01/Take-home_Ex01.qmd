@@ -3,7 +3,7 @@ title: "Take-home exercise01"
 author: "YUAN yihao"
 ---
 
-Getting started
+# Getting started
 
 install and launching R packages
 
@@ -12,7 +12,7 @@ pacman::p_load(ggiraph, plotly,
                patchwork, DT, tidyverse) 
 ```
 
-Importing the data
+# Importing the data
 
 ```{r}
 res_data <- read_csv("respopagesex2024/respopagesex2024.csv")
@@ -56,11 +56,6 @@ library(ggplot2)
 library(plotly)
 library(dplyr)
 
-plot_data <- res_data %>%
-  mutate(
-    Sex = factor(Sex, levels = c("Males", "Females")),
-    tooltip = paste0("PA: ", PA, "<br>Sex: ", Sex, "<br>Population: ", format(Pop, big.mark = ","))
-  )
 
 p <- ggplot(plot_data, aes(x = PA, y = Pop, fill = Sex, text = tooltip)) +
   geom_bar(stat = "identity", position = "stack") +
