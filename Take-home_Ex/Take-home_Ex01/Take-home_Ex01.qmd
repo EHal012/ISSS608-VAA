@@ -3,77 +3,194 @@ title: "Take-home exercise01"
 author: "YUAN yihao"
 ---
 
-# Getting started
+# 1. Overview
 
-install and launching R packages
+## 1.1 Background
+
+Analysis on demographic structures and distribution of Singapore in 2024
+
+## 1.2 Objective
+
+Identify the gender distribution by age
+
+Identify the age distribution by region
+
+Conduct more detailed analysis on the regions with distinct characteristics
+
+## 1.3 The Data
+
+*Singapore Residents by Planning Area / Subzone, Single Year of Age and Sex, June 2024* dataset shares by [Department of Statistics, Singapore (DOS)](https://www.singstat.gov.sg/)
+
+# 2. Packages
 
 ```{r}
 pacman::p_load(ggiraph, plotly, 
                patchwork, DT, tidyverse) 
 ```
 
-# Importing the data
+# 3. Getting Started
+
+## 3.1 Importing data
 
 ```{r}
 res_data <- read_csv("respopagesex2024/respopagesex2024.csv")
 ```
 
-1.  Stacked Histogram of Population by Age and Sex
+## 3.2 Data cleaning
+
+### 3.2.1 Check missing values
 
 ```{r}
-res_data$Age <- as.numeric(as.character(res_data$Age))
+res_data %>% filter(if_any(everything(), is.na))
+```
+
+```{r}
+colSums(is.na(res_data))
+```
+
+### 3.2.2 Change data values
+
+```{r}
+res_data <- res_data %>%
+  mutate(Age = ifelse(Age == "90_and_Over", "90", Age),
+         Age = as.numeric(Age)) 
+```
+
+### 3.2.3 Check and Convert data type
+
+```{r}
 
 str(res_data)
 
+
+res_data <- res_data %>%
+  mutate(
+    Age = as.numeric(Age),
+    Pop = as.numeric(Pop)
+  )
 ```
 
+### 3.2.4 Data glimpse
+
 ```{r}
-library(ggplot2)
-library(plotly)
+str(res_data)
+```
+
+# 4. Exploratory Visual Analysis
+
+## 4.1 Population by Age and Sex
+
+The grey area represents the lower population for males and females. The colored bars represent the number of population exceeded another gender
+
+```{r}
 library(dplyr)
+library(ggplot2)
 
-sex_colors <- c("Males" = "steelblue", "Females" = "tomato")
 
-plot_data <- res_data %>%
-  mutate(tooltip = paste("Age:", Age, "<br>Sex:", Sex, "<br>Pop:", Pop))
+grouped_data <- res_data %>%
+  group_by(Age, Sex) %>%
+  summarise(Pop = sum(Pop, na.rm = TRUE), .groups = "drop")
 
-p <- ggplot(plot_data, aes(x = Age, y = Pop, fill = Sex, text = tooltip)) +
-  geom_col(position = "stack") +
-  scale_fill_manual(values = sex_colors) +
+
+wide_data <- grouped_data %>%
+  pivot_wider(names_from = Sex, values_from = Pop, values_fill = 0) %>%
+  mutate(
+    min_pop = pmin(Males, Females),
+    male_extra = ifelse(Males > Females, Males - Females, 0),
+    female_extra = ifelse(Females > Males, Females - Males, 0)
+  )
+
+
+ggplot() +
+
+  geom_col(data = wide_data, aes(x = Age, y = min_pop), 
+           fill = "gray70", width = 0.6) +
+
+
+  geom_col(data = wide_data, aes(x = Age, y = male_extra), 
+           fill = "steelblue", width = 0.6) +
+
+
+  geom_col(data = wide_data, aes(x = Age, y = female_extra), 
+           fill = "tomato", width = 0.6) +
+
   labs(
-    x = "Age", y = "Population",
-    title = "Stacked Histogram of Population by Age and Sex"
+    title = "Population by Age and Sex",
+    x = "Age",
+    y = "Population"
   ) +
   theme_minimal()
 
-ggplotly(p, tooltip = "text")
+
 ```
 
-2.  Stacked Bar chart of Population by Planing Area and Sex
+Observations: Obviously, in the age range of 0 to 30, the male population is larger than the female population. However, from 30 to 90, the female population is significantly larger than the male population.
+
+## 4.2 Population by Age Group and Planning Area Analyze the number of the aging population in each region.
 
 ```{r}
-library(ggplot2)
-library(plotly)
+res_data_grouped <- res_data %>%
+  mutate(AgeGroup = case_when(
+    Age >= 0 & Age <= 20 ~ "Under Age",
+    Age >= 21 & Age <= 60 ~ "Adult",
+    Age >= 61 ~ "Aging"
+  )) %>%
+  group_by(PA, AgeGroup) %>%
+  summarise(Pop = sum(Pop, na.rm = TRUE), .groups = "drop")
+
+res_data_grouped_filtered <- res_data_grouped %>%
+  filter(AgeGroup != "Adult")
+
+ggplot(res_data_grouped_filtered, aes(x = Pop, y = reorder(PA, Pop), fill = AgeGroup)) +
+  geom_col(position = position_dodge(width = 0.9), width = 0.4) +
+  labs(
+    title = "Population by Age Group and Planning Area",
+    x = "Population",
+    y = "Planning Area",
+    fill = "Age Group"
+  ) +
+  scale_y_discrete(expand = expansion(mult = c(0.4, 0.4))) + 
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 3, margin = margin(r = 5)), 
+    legend.position = "top"
+  )
+
+
+```
+
+Observations: Given the large number of regions, it is proposed to construct new variables in order to more intuitively analyze and understand the distribution and proportion of the aging population.
+
+## 4.3 Aging-to-Under-Age Population Ratio by Planning Area
+
+```{r}
 library(dplyr)
 
 
-p <- ggplot(plot_data, aes(x = PA, y = Pop, fill = Sex, text = tooltip)) +
-  geom_bar(stat = "identity", position = "stack") +
-  scale_fill_manual(values = c("Males" = "#1f77b4", "Females" = "#ff7f0e")) +
-  labs(x = NULL, y = NULL, fill = "Gender") +
+age_summary <- res_data_grouped %>%
+  filter(AgeGroup %in% c("Under Age", "Aging")) %>%
+  group_by(PA, AgeGroup) %>%
+  summarise(Total = sum(Pop), .groups = "drop")
+
+
+age_ratio <- age_summary %>%
+  tidyr::pivot_wider(names_from = AgeGroup, values_from = Total) %>%
+  mutate(ratio = Aging / `Under Age`)
+```
+
+```{r}
+ggplot(age_ratio, aes(x = ratio, y = reorder(PA, ratio))) +
+  geom_col(fill = "steelblue") +
+  labs(
+    title = "Aging-to-Under-Age Population Ratio by Planning Area",
+    x = "Aging / Under Age Ratio",
+    y = "Planning Area"
+  ) +
   theme_minimal() +
   theme(
-    axis.text.x = element_blank(),
-    axis.text.y = element_blank(),
-    panel.grid.major.x = element_blank(),
-    panel.grid.major.y = element_blank()
+    axis.text.y = element_text(size = 5),
+    plot.title = element_text(face = "bold")
   )
-
-ggplotly(p, tooltip = "text") %>%
-  layout(
-    hoverlabel = list(bgcolor = "white", font = list(size = 12)),
-    legend = list(orientation = "h", x = 0.5, y = -0.2),
-    yaxis = list(showticklabels = FALSE, title = "")
-  ) %>%
-  config(displayModeBar = TRUE)
 ```
+
+Observation: From this chart, we can see the ranking of regions with a larger proportion of the elderly population.
