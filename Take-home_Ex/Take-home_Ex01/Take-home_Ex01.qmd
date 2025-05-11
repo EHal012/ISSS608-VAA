@@ -3,7 +3,7 @@ title: "Take-home exercise01"
 description: "Part1 and Part2" 
 date: "May 11, 2025" 
 date-modified: "May 11, 2025" 
-format: html 
+format: docx
 author: "YUAN Yihao" 
 editor: visual 
 execute: 
