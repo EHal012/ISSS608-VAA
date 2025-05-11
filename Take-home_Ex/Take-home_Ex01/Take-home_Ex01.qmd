@@ -1,9 +1,21 @@
 ---
-title: "Take-home exercise01"
-author: "YUAN yihao"
+title: "Take-home exercise01" 
+description: "Part1 and Part2" 
+date: "May 11, 2025" 
+date-modified: "May 11, 2025" 
+format: html 
+author: "YUAN Yihao" 
+editor: visual 
+execute: 
+  eval: true 
+  echo: true 
+  warning: false 
+  freeze: true 
 ---
 
-# 1. Overview
+# Part 1
+
+# 1.0 Overview
 
 ## 1.1 Background
 
@@ -194,3 +206,51 @@ ggplot(age_ratio, aes(x = ratio, y = reorder(PA, ratio))) +
 ```
 
 Observation: From this chart, we can see the ranking of regions with a larger proportion of the elderly population.
+
+# PART 2 Peer Learning
+
+Comment for 2nd plot in https://pengxinhuang.netlify.app/take-home_ex01/#age-structure-comparison-across-planning-areas
+
+pros
+1. Appropriate type of plot. Easier to know the distribution.
+2. Choose some typical area to represent diffirent area's distribution.
+3. Put plots together to compare
+
+cons
+1. X-axis: The data has negative numbers
+2. Y-axis: The text overlaps, and the last group is NA
+3. Overall: The X-axis index of the four pictures are different, which may cause some population misguidance
+
+
+```{r}
+res_data <- res_data %>%
+  mutate(Age_group = case_when(
+    Age == "90_and_Over" ~ "90_and_Over",
+    TRUE ~ paste0(floor(as.numeric(Age) / 10) * 10, "-", floor(as.numeric(Age) / 10) * 10 + 9)
+  ))
+agg_data <- res_data %>%
+  group_by(PA, Age_group, Sex) %>%
+  summarise(Pop = sum(Pop, na.rm = TRUE)) %>%
+  ungroup()
+agg_data <- agg_data %>%
+  mutate(Pop_plot = ifelse(Sex == "Males", -Pop, Pop))
+ggplot(agg_data %>% filter(PA %in% c("Bedok", "Bukit Timah", "Outram", "Tampines")),
+       aes(x = Pop_plot, y = Age_group, fill = Sex)) +
+  geom_bar(stat = "identity", width = 0.8) +
+  scale_fill_manual(values = c("Males" = "steelblue", "Females" = "tomato")) +
+  scale_x_continuous(labels = abs) +
+  facet_wrap(~PA, ncol = 2, scales = "fixed") +
+  labs(title = "Population Pyramids of Selected Planning Areas (2024)",
+    subtitle = "Representing new township (Tampines), mature estate (Bedok), high-income area (Bukit Timah),\nand historical district (Outram)",
+    x = "Population",
+    y = NULL,
+    fill = "Sex") +
+  theme_minimal() +
+  theme(
+    axis.text.y = element_text(size = 8),
+    plot.subtitle = element_text(size = 9, hjust = 0.5),
+    strip.text = element_text(face = "bold")
+  )
+
+
+```
