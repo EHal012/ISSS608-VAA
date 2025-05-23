@@ -1,6 +1,16 @@
 ---
 title: "Hands-on_Ex04(4)"
-author: "YUAN Yihao"
+description: "Hands-on_Ex04(4)" 
+date: "May 21, 2025" 
+date-modified: "May 21, 2025" 
+format: html
+author: "YUAN Yihao" 
+editor: visual 
+execute: 
+  eval: true 
+  echo: true 
+  warning: false 
+  freeze: true 
 ---
 
 
