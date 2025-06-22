@@ -1,0 +1,16 @@
+---
+title: "Take-home_Ex03"
+description: "Take-home Ex03" 
+date: "Jun 22, 2025" 
+date-modified: "Jun 22, 2025" 
+format: html
+author: "YUAN Yihao" 
+editor: visual 
+execute: 
+  eval: true 
+  echo: true 
+  warning: false 
+  freeze: true 
+---
+
+Kindly refer to https://isss608-25t3-anqi.netlify.app/Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html
