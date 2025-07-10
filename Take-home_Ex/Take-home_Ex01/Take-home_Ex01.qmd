@@ -2,8 +2,8 @@
 title: "Take-home exercise01" 
 description: "Part1 and Part2" 
 date: "May 11, 2025" 
-date-modified: "May 11, 2025" 
-format: docx
+date-modified: "JUL 11, 2025" 
+format: html
 author: "YUAN Yihao" 
 editor: visual 
 execute: 
@@ -160,13 +160,13 @@ ggplot(res_data_grouped_filtered, aes(x = Pop, y = reorder(PA, Pop), fill = AgeG
     x = "Population",
     y = "Planning Area",
     fill = "Age Group"
-  ) +
-  scale_y_discrete(expand = expansion(mult = c(0.4, 0.4))) + 
-  theme_minimal() +
+  )+ theme_minimal(base_size = 10) +
   theme(
-    axis.text.y = element_text(size = 3, margin = margin(r = 5)), 
-    legend.position = "top"
+    axis.text.y = element_text(size = 5, margin = margin(r = 5)),
+    legend.position = "top",
+    plot.margin = margin(10, 10, 10, 10)
   )
+
 
 
 ```

@@ -7,6 +7,62 @@
     "text": "Kindly refer to https://isss608-25t3-anqi.netlify.app/Take-home_Ex/Take-home_Ex03/Take-home_Ex03.html"
   },
   {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#background",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#background",
+    "title": "Take-home exercise01",
+    "section": "1.1 Background",
+    "text": "1.1 Background\nAnalysis on demographic structures and distribution of Singapore in 2024"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#objective",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#objective",
+    "title": "Take-home exercise01",
+    "section": "1.2 Objective",
+    "text": "1.2 Objective\nIdentify the gender distribution by age\nIdentify the age distribution by region\nConduct more detailed analysis on the regions with distinct characteristics"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#the-data",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#the-data",
+    "title": "Take-home exercise01",
+    "section": "1.3 The Data",
+    "text": "1.3 The Data\nSingapore Residents by Planning Area / Subzone, Single Year of Age and Sex, June 2024 dataset shares by Department of Statistics, Singapore (DOS)"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#importing-data",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#importing-data",
+    "title": "Take-home exercise01",
+    "section": "3.1 Importing data",
+    "text": "3.1 Importing data\n\nres_data &lt;- read_csv(\"respopagesex2024/respopagesex2024.csv\")"
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#data-cleaning",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#data-cleaning",
+    "title": "Take-home exercise01",
+    "section": "3.2 Data cleaning",
+    "text": "3.2 Data cleaning\n\n3.2.1 Check missing values\n\nres_data %&gt;% filter(if_any(everything(), is.na))\n\n# A tibble: 0 × 6\n# ℹ 6 variables: PA &lt;chr&gt;, SZ &lt;chr&gt;, Age &lt;chr&gt;, Sex &lt;chr&gt;, Pop &lt;dbl&gt;,\n#   Time &lt;dbl&gt;\n\n\n\ncolSums(is.na(res_data))\n\n  PA   SZ  Age  Sex  Pop Time \n   0    0    0    0    0    0 \n\n\n\n\n3.2.2 Change data values\n\nres_data &lt;- res_data %&gt;%\n  mutate(Age = ifelse(Age == \"90_and_Over\", \"90\", Age),\n         Age = as.numeric(Age)) \n\n\n\n3.2.3 Check and Convert data type\n\nstr(res_data)\n\ntibble [60,424 × 6] (S3: tbl_df/tbl/data.frame)\n $ PA  : chr [1:60424] \"Ang Mo Kio\" \"Ang Mo Kio\" \"Ang Mo Kio\" \"Ang Mo Kio\" ...\n $ SZ  : chr [1:60424] \"Ang Mo Kio Town Centre\" \"Ang Mo Kio Town Centre\" \"Ang Mo Kio Town Centre\" \"Ang Mo Kio Town Centre\" ...\n $ Age : num [1:60424] 0 0 1 1 2 2 3 3 4 4 ...\n $ Sex : chr [1:60424] \"Males\" \"Females\" \"Males\" \"Females\" ...\n $ Pop : num [1:60424] 10 10 10 10 10 10 10 10 30 10 ...\n $ Time: num [1:60424] 2024 2024 2024 2024 2024 ...\n\nres_data &lt;- res_data %&gt;%\n  mutate(\n    Age = as.numeric(Age),\n    Pop = as.numeric(Pop)\n  )\n\n\n\n3.2.4 Data glimpse\n\nstr(res_data)\n\ntibble [60,424 × 6] (S3: tbl_df/tbl/data.frame)\n $ PA  : chr [1:60424] \"Ang Mo Kio\" \"Ang Mo Kio\" \"Ang Mo Kio\" \"Ang Mo Kio\" ...\n $ SZ  : chr [1:60424] \"Ang Mo Kio Town Centre\" \"Ang Mo Kio Town Centre\" \"Ang Mo Kio Town Centre\" \"Ang Mo Kio Town Centre\" ...\n $ Age : num [1:60424] 0 0 1 1 2 2 3 3 4 4 ...\n $ Sex : chr [1:60424] \"Males\" \"Females\" \"Males\" \"Females\" ...\n $ Pop : num [1:60424] 10 10 10 10 10 10 10 10 30 10 ...\n $ Time: num [1:60424] 2024 2024 2024 2024 2024 ..."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#population-by-age-and-sex",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#population-by-age-and-sex",
+    "title": "Take-home exercise01",
+    "section": "4.1 Population by Age and Sex",
+    "text": "4.1 Population by Age and Sex\nThe grey area represents the lower population for males and females. The colored bars represent the number of population exceeded another gender\n\nlibrary(dplyr)\nlibrary(ggplot2)\n\n\ngrouped_data &lt;- res_data %&gt;%\n  group_by(Age, Sex) %&gt;%\n  summarise(Pop = sum(Pop, na.rm = TRUE), .groups = \"drop\")\n\n\nwide_data &lt;- grouped_data %&gt;%\n  pivot_wider(names_from = Sex, values_from = Pop, values_fill = 0) %&gt;%\n  mutate(\n    min_pop = pmin(Males, Females),\n    male_extra = ifelse(Males &gt; Females, Males - Females, 0),\n    female_extra = ifelse(Females &gt; Males, Females - Males, 0)\n  )\n\n\nggplot() +\n\n  geom_col(data = wide_data, aes(x = Age, y = min_pop), \n           fill = \"gray70\", width = 0.6) +\n\n\n  geom_col(data = wide_data, aes(x = Age, y = male_extra), \n           fill = \"steelblue\", width = 0.6) +\n\n\n  geom_col(data = wide_data, aes(x = Age, y = female_extra), \n           fill = \"tomato\", width = 0.6) +\n\n  labs(\n    title = \"Population by Age and Sex\",\n    x = \"Age\",\n    y = \"Population\"\n  ) +\n  theme_minimal()\n\n\n\n\n\n\n\n\nObservations: Obviously, in the age range of 0 to 30, the male population is larger than the female population. However, from 30 to 90, the female population is significantly larger than the male population."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#population-by-age-group-and-planning-area-analyze-the-number-of-the-aging-population-in-each-region.",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#population-by-age-group-and-planning-area-analyze-the-number-of-the-aging-population-in-each-region.",
+    "title": "Take-home exercise01",
+    "section": "4.2 Population by Age Group and Planning Area Analyze the number of the aging population in each region.",
+    "text": "4.2 Population by Age Group and Planning Area Analyze the number of the aging population in each region.\n\nres_data_grouped &lt;- res_data %&gt;%\n  mutate(AgeGroup = case_when(\n    Age &gt;= 0 & Age &lt;= 20 ~ \"Under Age\",\n    Age &gt;= 21 & Age &lt;= 60 ~ \"Adult\",\n    Age &gt;= 61 ~ \"Aging\"\n  )) %&gt;%\n  group_by(PA, AgeGroup) %&gt;%\n  summarise(Pop = sum(Pop, na.rm = TRUE), .groups = \"drop\")\n\nres_data_grouped_filtered &lt;- res_data_grouped %&gt;%\n  filter(AgeGroup != \"Adult\")\n\nggplot(res_data_grouped_filtered, aes(x = Pop, y = reorder(PA, Pop), fill = AgeGroup)) +\n  geom_col(position = position_dodge(width = 0.9), width = 0.4) +\n  labs(\n    title = \"Population by Age Group and Planning Area\",\n    x = \"Population\",\n    y = \"Planning Area\",\n    fill = \"Age Group\"\n  )+ theme_minimal(base_size = 10) +\n  theme(\n    axis.text.y = element_text(size = 5, margin = margin(r = 5)),\n    legend.position = \"top\",\n    plot.margin = margin(10, 10, 10, 10)\n  )\n\n\n\n\n\n\n\n\nObservations: Given the large number of regions, it is proposed to construct new variables in order to more intuitively analyze and understand the distribution and proportion of the aging population."
+  },
+  {
+    "objectID": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#aging-to-under-age-population-ratio-by-planning-area",
+    "href": "Take-home_Ex/Take-home_Ex01/Take-home_Ex01.html#aging-to-under-age-population-ratio-by-planning-area",
+    "title": "Take-home exercise01",
+    "section": "4.3 Aging-to-Under-Age Population Ratio by Planning Area",
+    "text": "4.3 Aging-to-Under-Age Population Ratio by Planning Area\n\nlibrary(dplyr)\n\n\nage_summary &lt;- res_data_grouped %&gt;%\n  filter(AgeGroup %in% c(\"Under Age\", \"Aging\")) %&gt;%\n  group_by(PA, AgeGroup) %&gt;%\n  summarise(Total = sum(Pop), .groups = \"drop\")\n\n\nage_ratio &lt;- age_summary %&gt;%\n  tidyr::pivot_wider(names_from = AgeGroup, values_from = Total) %&gt;%\n  mutate(ratio = Aging / `Under Age`)\n\n\nggplot(age_ratio, aes(x = ratio, y = reorder(PA, ratio))) +\n  geom_col(fill = \"steelblue\") +\n  labs(\n    title = \"Aging-to-Under-Age Population Ratio by Planning Area\",\n    x = \"Aging / Under Age Ratio\",\n    y = \"Planning Area\"\n  ) +\n  theme_minimal() +\n  theme(\n    axis.text.y = element_text(size = 5),\n    plot.title = element_text(face = \"bold\")\n  )\n\n\n\n\n\n\n\n\nObservation: From this chart, we can see the ranking of regions with a larger proportion of the elderly population."
+  },
+  {
     "objectID": "Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.html",
     "href": "Hands-on_Ex/Hands-on_Ex10/Hands-on_Ex10.html",
     "title": "Hands-on_Ex10",
